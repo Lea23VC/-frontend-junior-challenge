@@ -26,6 +26,7 @@ const TodoList = () => {
         Looks like you&apos;re absolutely free today!
         {todos.todoList.map((todo, index) => (
           <TodoListItem
+            key={index}
             label={todo.label}
             checked={todo.checked}
             index={index}

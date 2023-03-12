@@ -595,6 +595,11 @@ video {
   width: 75% !important;
 }
 
+.select-none {
+  -webkit-user-select: none !important;
+          user-select: none !important;
+}
+
 .gap-4 {
   gap: 1rem !important;
 }

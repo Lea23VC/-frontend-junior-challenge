@@ -23,6 +23,15 @@ export default function TodoInput() {
 
   const dispatch = useDispatch();
 
+  function dispatchTodo() {
+    const newTodo: todo = {
+      label: name,
+      checked: false,
+    };
+    setName("");
+    dispatch(addTodo(newTodo));
+  }
+
   return (
     <Box className="px-4">
       <Box className="flex gap-4">
@@ -43,12 +52,9 @@ export default function TodoInput() {
             className="w-full h-full"
             variant="contained"
             onClick={() => {
-              const newTodo: todo = {
-                label: name,
-                checked: false,
-              };
-              dispatch(addTodo(newTodo));
+              dispatchTodo();
             }}
+            disabled={name.length < 1 ? true : false}
           >
             <Typography variant="button" className="font-bold">
               Add todo

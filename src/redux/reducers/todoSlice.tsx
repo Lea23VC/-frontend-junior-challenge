@@ -1,15 +1,25 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import { API_URL } from "config/api";
 import { todoInitalState as initialState } from "constants/todoInitialState";
 
 export type todoState = {
   todoList: todo[];
   count: number;
+  status: string;
+  error: string;
 };
 
 export type todo = {
   label: string;
   checked?: boolean;
 };
+
+export const fetchTodos = createAsyncThunk("todos/fetchTodos", async () => {
+  const response = await axios.get<todo[]>(API_URL);
+  console.log(response.data);
+  return response?.data;
+});
 
 export const todoSlice = createSlice({
   name: "todo",
@@ -28,8 +38,26 @@ export const todoSlice = createSlice({
       updateState(state, newArray);
     },
   },
+  extraReducers(builder) {
+    builder
+      .addCase(fetchTodos.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(fetchTodos.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.todoList = action.payload;
+      })
+      .addCase(fetchTodos.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      });
+  },
 });
 export const { addTodo, removeTodo, updateTodo } = todoSlice.actions;
+
+export const selectAllTodos = (state: todoState) => state.todoList;
+export const getTodosError = (state: todoState) => state.error;
+export const getTodosStatus = (state: todoState) => state.status;
 
 export default todoSlice.reducer;
 

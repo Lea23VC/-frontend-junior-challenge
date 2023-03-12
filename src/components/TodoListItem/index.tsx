@@ -51,7 +51,11 @@ export default function TodoListItem({
           checked={checked}
           onChange={() => togleTodo()}
         />
-        <span className={checked ? "todo-list-item-checked" : ""}>{label}</span>
+        <span
+          className={`${checked ? "todo-list-item-checked" : ""} select-none`}
+        >
+          {label}
+        </span>
       </div>
       <button
         type="button"
