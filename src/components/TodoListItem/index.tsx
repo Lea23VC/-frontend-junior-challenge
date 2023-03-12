@@ -1,16 +1,27 @@
-import React from "react";
 import "./styles.css";
 
-const TodoListItem = ({ onCheck, checked, onDelete, label }) => (
+type TodoListItemProps = {
+  onCheck: () => void;
+  checked: boolean;
+  onDelete: () => void;
+  label: string;
+};
+
+const TodoListItem = ({
+  onCheck,
+  checked,
+  onDelete,
+  label,
+}: TodoListItemProps) => (
   <div className="todo-list-item">
     <div
-      tabIndex="0"
+      tabIndex={0}
       role="checkbox"
       aria-checked
       className="todo-list-item-content"
     >
       <input
-        tabIndex="-1"
+        tabIndex={-1}
         type="checkbox"
         checked={checked}
         onChange={onCheck}

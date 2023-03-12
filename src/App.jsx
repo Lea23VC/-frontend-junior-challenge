@@ -1,7 +1,7 @@
 import React from "react";
 import TodoList from "./components/TodoList";
 import TodoResults from "./components/TodoResults";
-import "./App.css";
+import "../dist/output.css";
 
 const App = () => {
   return (

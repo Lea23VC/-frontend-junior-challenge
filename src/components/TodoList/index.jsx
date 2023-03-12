@@ -1,5 +1,6 @@
 import React from "react";
 import "./styles.css";
+import TodoListItem from "../TodoListItem/index";
 
 const TodoList = () => {
   const handleDelete = (todoId) => {
@@ -18,6 +19,9 @@ const TodoList = () => {
       </div>
       <div className="no-todos">
         Looks like you&apos;re absolutely free today!
+        <TodoListItem label="TEST" />
+        <TodoListItem label="TEST" />
+        <TodoListItem label="TEST" />
       </div>
     </div>
   );
