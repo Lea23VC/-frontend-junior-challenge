@@ -1,13 +1,14 @@
-import React from "react";
 import TodoList from "./components/TodoList";
 import TodoResults from "./components/TodoResults";
-import "../dist/output.css";
+import TodoInput from "./components/TodoInput";
+import "./App.css";
 
 const App = () => {
   return (
     <div className="root">
       <TodoList />
       <TodoResults />
+      <TodoInput />
     </div>
   );
 };

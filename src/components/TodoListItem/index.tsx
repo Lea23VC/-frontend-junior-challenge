@@ -1,37 +1,65 @@
+import { useDispatch } from "react-redux";
 import "./styles.css";
+import { removeTodo, updateTodo } from "redux/reducers/todoSlice";
 
 type TodoListItemProps = {
-  onCheck: () => void;
-  checked: boolean;
-  onDelete: () => void;
-  label: string;
+  onCheck?: () => void;
+  checked?: boolean;
+  onDelete?: () => void;
+  label?: string;
+  index: number;
 };
 
-const TodoListItem = ({
+export default function TodoListItem({
   onCheck,
-  checked,
+  checked = false,
   onDelete,
   label,
-}: TodoListItemProps) => (
-  <div className="todo-list-item">
-    <div
-      tabIndex={0}
-      role="checkbox"
-      aria-checked
-      className="todo-list-item-content"
-    >
-      <input
-        tabIndex={-1}
-        type="checkbox"
-        checked={checked}
-        onChange={onCheck}
-      />
-      <span className={checked ? "todo-list-item-checked" : ""}>{label}</span>
-    </div>
-    <button type="button" className="todo-list-item-delete" onClick={onDelete}>
-      x
-    </button>
-  </div>
-);
+  index,
+}: TodoListItemProps) {
+  const dispatch = useDispatch();
 
-export default TodoListItem;
+  function deleteTodo() {
+    dispatch(removeTodo(index));
+  }
+
+  function togleTodo() {
+    const updatedTodo = {
+      label: label,
+      checked: !checked,
+    };
+    const data = {
+      todo: updatedTodo,
+      index: index,
+    };
+    console.log("A");
+    dispatch(updateTodo(data));
+  }
+
+  return (
+    <div className="todo-list-item">
+      <div
+        tabIndex={0}
+        role="checkbox"
+        aria-checked
+        className="todo-list-item-content w-full"
+        onClick={() => togleTodo()}
+      >
+        <input
+          tabIndex={-1}
+          type="checkbox"
+          checked={checked}
+          onChange={() => togleTodo()}
+        />
+        <span className={checked ? "todo-list-item-checked" : ""}>{label}</span>
+      </div>
+      <button
+        type="button"
+        className="todo-list-item-delete"
+        onClick={() => deleteTodo()}
+      >
+        x
+      </button>
+    </div>
+  );
+}
