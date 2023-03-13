@@ -21,8 +21,8 @@ export default function TodoInput() {
 
   return (
     <Box className="px-4">
-      <Box className="flex gap-4">
-        <Box className="w-[75%]">
+      <Box className="flex gap-4 flex-col sm:flex-row">
+        <Box className="w-full sm:w-[75%]">
           <StyledInputField
             size="medium"
             className="w-full"
@@ -39,7 +39,7 @@ export default function TodoInput() {
             }}
           />
         </Box>
-        <Box className="w-[25%]">
+        <Box className="w-full sm:w-[25%]">
           <Button
             className="w-full h-full"
             variant="contained"

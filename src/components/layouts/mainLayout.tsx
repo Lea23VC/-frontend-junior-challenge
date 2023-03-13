@@ -13,5 +13,9 @@ export default function MainLayout({
 }) {
   const { loaded }: todoState = useSelector((state: RootState) => state.todo);
 
-  return loaded ? <Box>{children}</Box> : <ActivityIndicatorBox />;
+  return (
+    <Box className="max-w-xl m-auto px-2">
+      {loaded ? <Box>{children}</Box> : <ActivityIndicatorBox />}
+    </Box>
+  );
 }

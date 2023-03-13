@@ -38,30 +38,32 @@ export default function TodoListItem({ index, todo }: TodoListItemProps) {
   }
 
   return (
-    <Box className="todo-list-item">
-      <FormGroup className="hover:bg-slate-100 w-full px-2 rounded-sm transition-colors duration-200">
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={checked}
-              onClick={() => {
-                togleTodo();
-              }}
-            />
-          }
-          label={
-            <Typography variant="body2" textAlign="left">
-              <span
-                className={`${
-                  checked ? "todo-list-item-checked" : ""
-                } select-none`}
-              >
-                {label}
-              </span>
-            </Typography>
-          }
-        />
-      </FormGroup>
+    <Box className="todo-list-item flex w-[100%] sm:w-[400px] ">
+      <Box className="hover:bg-slate-100 px-2 rounded-sm transition-colors duration-200">
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={checked}
+                onClick={() => {
+                  togleTodo();
+                }}
+              />
+            }
+            label={
+              <Typography variant="body2" textAlign="left">
+                <span
+                  className={`${
+                    checked ? "todo-list-item-checked" : ""
+                  } select-none`}
+                >
+                  {label}
+                </span>
+              </Typography>
+            }
+          />
+        </FormGroup>
+      </Box>
       <IconButton
         color="primary"
         aria-label="remove todo"

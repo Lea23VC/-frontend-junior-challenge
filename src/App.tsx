@@ -10,7 +10,7 @@ const App = () => {
   store.dispatch(fetchTodos());
   return (
     <MainLayout>
-      <div className="root">
+      <div className="">
         <TodoList />
         <TodoResults />
         <TodoForm />
