@@ -56,18 +56,6 @@ export const todoSlice = createSlice({
   name: "todo",
   initialState,
   reducers: {
-    addTodo: (state, action) => {
-      const newArray = addTodoUtil(action.payload, state.todoList);
-      updateState(state, newArray);
-    },
-    removeTodo: (state, action) => {
-      const newArray = removeTodoUtil(action.payload, state.todoList);
-      updateState(state, newArray);
-    },
-    updateTodo: (state, action) => {
-      const newArray = updateTodoUtil(action.payload, state.todoList);
-      updateState(state, newArray);
-    },
     closeSnackbar: (state) => {
       state.status = "";
     },
@@ -84,8 +72,7 @@ export const todoSlice = createSlice({
         state.snackbarMessage = "TODOs loaded from API!";
       })
       .addCase(fetchTodos.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        updateOnError(state, action.error.message, "Error deleting the todo");
       })
       .addCase(deleteTodoAPI.fulfilled, (state, action) => {
         state.status = "succeeded";
@@ -94,7 +81,11 @@ export const todoSlice = createSlice({
         updateState(state, action.payload);
       })
       .addCase(deleteTodoAPI.rejected, (state, action) => {
-        console.log("delete rejected");
+        updateOnError(
+          state,
+          action.error.message,
+          "Error while deleting the todo"
+        );
       })
       .addCase(deleteTodoAPI.pending, (state, action) => {
         state.status = "loading";
@@ -107,7 +98,13 @@ export const todoSlice = createSlice({
       .addCase(updateTodoAPI.pending, (state, action) => {
         state.status = "loading";
       })
-      .addCase(updateTodoAPI.rejected, (state, action) => {})
+      .addCase(updateTodoAPI.rejected, (state, action) => {
+        updateOnError(
+          state,
+          action.error.message,
+          "Error while updating the todo"
+        );
+      })
       .addCase(addTodoAPI.pending, (state, action) => {
         state.status = "loading";
       })
@@ -122,8 +119,7 @@ export const todoSlice = createSlice({
       });
   },
 });
-export const { addTodo, removeTodo, updateTodo, closeSnackbar } =
-  todoSlice.actions;
+export const { closeSnackbar } = todoSlice.actions;
 
 export default todoSlice.reducer;
 
@@ -158,4 +154,14 @@ function countDone(todoList: todo[]) {
 function updateState(state: todoState, newArray: todo[]) {
   state.todoList = newArray;
   state.count = countDone(newArray);
+}
+
+function updateOnError(
+  state: todoState,
+  errorMessage: string,
+  snackbarMessage: string
+) {
+  state.status = "failed";
+  state.error = errorMessage;
+  state.snackbarMessage = snackbarMessage;
 }

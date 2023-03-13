@@ -8,11 +8,19 @@ import Snackbar from "@mui/material/Snackbar";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import { todoState } from "ts/types/todo.types";
+import { useEffect, useRef } from "react";
 
 const TodoList = () => {
   const todos: todoState = useSelector((state: RootState) => state.todo);
-
   const dispatch = useDispatch();
+
+  //create reference of div below list for scrolling
+  const bottomRef = useRef(null);
+
+  //if todolist change, trigger a scroll, so it can be viewed with a max height setting
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [todos.todoList]);
 
   return (
     <Box className="todo-list">
@@ -26,7 +34,7 @@ const TodoList = () => {
           ? "Looks like you're absolutely free today!"
           : "Here's your todo list for today!"}
 
-        <Box className="py-2">
+        <Box className="py-2 max-h-[300px] min-h-[300px] scroll-todo">
           {todos.todoList.map((todo, index) => (
             <TodoListItem
               key={index}
@@ -36,6 +44,7 @@ const TodoList = () => {
               index={index}
             />
           ))}
+          <Box ref={bottomRef} />
         </Box>
         <Box>
           <Snackbar

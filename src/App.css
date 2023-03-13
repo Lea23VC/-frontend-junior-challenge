@@ -1,6 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .scroll-todo {
+    @apply overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-gray-100 scrollbar-thumb-rounded-md;
+  }
+}
+
 /*
 ! tailwindcss v3.2.7 | MIT License | https://tailwindcss.com
 */
