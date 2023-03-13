@@ -5,11 +5,13 @@ import { todoInitalState as initialState } from "constants/todoInitialState";
 import { RootState } from "redux/store";
 import { todo, todoState, todoUpdateType } from "ts/types/todo.types";
 
+//fetch todos
 export const fetchTodos = createAsyncThunk("todos/fetchTodos", async () => {
   const response = await axios.get<todo[]>(API_URL);
   return response?.data;
 });
 
+//add todo
 export const addTodoAPI = createAsyncThunk(
   "todos/addTodos",
   async (todo: todo, thunkAPI) => {
@@ -20,6 +22,7 @@ export const addTodoAPI = createAsyncThunk(
   }
 );
 
+//delete todo
 export const deleteTodoAPI = createAsyncThunk(
   "todos/updateTodo",
   async (index: any, thunkAPI) => {
@@ -36,13 +39,14 @@ export const deleteTodoAPI = createAsyncThunk(
   }
 );
 
+//update todo
 export const updateTodoAPI = createAsyncThunk(
   "todos/deleteTodo",
   async (todoUpdate: todoUpdateType, thunkAPI) => {
     try {
       await axios.patch<todo[]>(API_URL, { data: { id: todoUpdate.index } });
     } catch (e) {
-      //the api gives an 404 if I use delete request
+      //the api gives an 404 if I use PATCH request
       //so I catch the error so i can return it as a successful request
     } finally {
       const state: RootState = thunkAPI.getState() as RootState;
@@ -56,30 +60,42 @@ export const todoSlice = createSlice({
   name: "todo",
   initialState,
   reducers: {
+    //this reducer close the snackbar using the status
     closeSnackbar: (state) => {
       state.status = "";
     },
   },
   extraReducers(builder) {
     builder
+
+      //set loading while it's fetching the todos
       .addCase(fetchTodos.pending, (state, action) => {
         state.status = "loading";
       })
+
+      //when todos are fetched, update the state with the todos and more
       .addCase(fetchTodos.fulfilled, (state, action) => {
         updateState(state, action.payload);
         state.status = "initial data loaded";
         state.loaded = true;
         state.snackbarMessage = "TODOs loaded from API!";
       })
+
+      //if it's rejected, modify the state using the updateOnError
+      //updateonError add a message to the snackbar and set the status to error
       .addCase(fetchTodos.rejected, (state, action) => {
         updateOnError(state, action.error.message, "Error deleting the todo");
       })
+
+      //if the todo is deleted, then set a message for the snackbar, update the todo list with
+      //updateState
       .addCase(deleteTodoAPI.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.snackbarMessage = "TODO deleted!";
 
         updateState(state, action.payload);
       })
+      //same as fetchTodos, the only change is the snackbar message
       .addCase(deleteTodoAPI.rejected, (state, action) => {
         updateOnError(
           state,
