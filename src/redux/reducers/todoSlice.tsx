@@ -67,7 +67,7 @@ export const todoSlice = createSlice({
       })
       .addCase(fetchTodos.fulfilled, (state, action) => {
         updateState(state, action.payload);
-        state.status = "succeeded";
+        state.status = "initial data loaded";
         state.loaded = true;
         state.snackbarMessage = "TODOs loaded from API!";
       })
@@ -114,8 +114,11 @@ export const todoSlice = createSlice({
         updateState(state, action.payload);
       })
       .addCase(addTodoAPI.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        updateOnError(
+          state,
+          action.error.message,
+          "Error while adding the todo"
+        );
       });
   },
 });

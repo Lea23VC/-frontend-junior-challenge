@@ -9,6 +9,7 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import { todoState } from "ts/types/todo.types";
 import { useEffect, useRef } from "react";
+import Alert from "@mui/material/Alert";
 
 const TodoList = () => {
   const todos: todoState = useSelector((state: RootState) => state.todo);
@@ -21,6 +22,24 @@ const TodoList = () => {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [todos.todoList]);
+
+  const alertSeverity = () => {
+    switch (todos.status) {
+      case "succeeded":
+        return "success";
+
+      case "failed":
+        return "error";
+
+      case "initial data loaded":
+        return "info";
+
+      default:
+        return null;
+    }
+  };
+
+  console.log("alertSeverity: ", alertSeverity());
 
   return (
     <Box className="todo-list">
@@ -48,11 +67,20 @@ const TodoList = () => {
         </Box>
         <Box>
           <Snackbar
-            open={todos.status === "succeeded"}
+            open={alertSeverity() ? true : false}
             autoHideDuration={5000}
             onClose={() => dispatch(closeSnackbar())}
-            message={todos.snackbarMessage}
-          />
+          >
+            {alertSeverity() && (
+              <Alert
+                onClose={() => dispatch(closeSnackbar())}
+                severity={alertSeverity()}
+                sx={{ width: "100%" }}
+              >
+                {todos.snackbarMessage ?? ""}
+              </Alert>
+            )}
+          </Snackbar>
           <Backdrop
             sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
             open={todos.status === "loading"}
