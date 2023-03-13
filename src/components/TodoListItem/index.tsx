@@ -1,26 +1,27 @@
-import { useDispatch } from "react-redux";
+//redux related
+import { deleteTodoAPI, updateTodoAPI } from "redux/reducers/todoSlice";
+import { store } from "redux/store";
+
+//MUI components
+import FormGroup from "@mui/material/FormGroup";
+import Checkbox from "@mui/material/Checkbox";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Box from "@mui/material/Box";
+import FormControlLabel from "@mui/material/FormControlLabel";
+
+//types and interfaces
+import { TodoListItemProps } from "ts/types/props.types";
+import { todoUpdateType } from "ts/types/todo.types";
+
+//css files
 import "./styles.css";
-import { removeTodo, updateTodo } from "redux/reducers/todoSlice";
 
-type TodoListItemProps = {
-  onCheck?: () => void;
-  checked?: boolean;
-  onDelete?: () => void;
-  label?: string;
-  index: number;
-};
-
-export default function TodoListItem({
-  onCheck,
-  checked = false,
-  onDelete,
-  label,
-  index,
-}: TodoListItemProps) {
-  const dispatch = useDispatch();
-
-  function deleteTodo() {
-    dispatch(removeTodo(index));
+export default function TodoListItem({ index, todo }: TodoListItemProps) {
+  const { label, checked } = todo;
+  async function deleteTodo() {
+    await store.dispatch(deleteTodoAPI(index));
   }
 
   function togleTodo() {
@@ -28,42 +29,47 @@ export default function TodoListItem({
       label: label,
       checked: !checked,
     };
-    const data = {
+    const data: todoUpdateType = {
       todo: updatedTodo,
       index: index,
     };
-    console.log("A");
-    dispatch(updateTodo(data));
+
+    store.dispatch(updateTodoAPI(data));
   }
 
   return (
-    <div className="todo-list-item">
-      <div
-        tabIndex={0}
-        role="checkbox"
-        aria-checked
-        className="todo-list-item-content w-full"
-        onClick={() => togleTodo()}
-      >
-        <input
-          tabIndex={-1}
-          type="checkbox"
-          checked={checked}
-          onChange={() => togleTodo()}
+    <Box className="todo-list-item">
+      <FormGroup className="hover:bg-slate-100 w-full px-2 rounded-sm transition-colors duration-200">
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={checked}
+              onClick={() => {
+                togleTodo();
+              }}
+            />
+          }
+          label={
+            <Typography variant="body2" textAlign="left">
+              <span
+                className={`${
+                  checked ? "todo-list-item-checked" : ""
+                } select-none`}
+              >
+                {label}
+              </span>
+            </Typography>
+          }
         />
-        <span
-          className={`${checked ? "todo-list-item-checked" : ""} select-none`}
-        >
-          {label}
-        </span>
-      </div>
-      <button
-        type="button"
-        className="todo-list-item-delete"
+      </FormGroup>
+      <IconButton
+        color="primary"
+        aria-label="remove todo"
+        component="label"
         onClick={() => deleteTodo()}
       >
-        x
-      </button>
-    </div>
+        <CloseIcon className="text-black" color="inherit" />
+      </IconButton>
+    </Box>
   );
 }

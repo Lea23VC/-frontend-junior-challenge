@@ -1,27 +1,14 @@
 import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
 import { useState } from "react";
-import { styled } from "@mui/system";
 import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { addTodo, todo } from "redux/reducers/todoSlice";
-
-const StyledInputField = styled(TextField)({
-  "& label.Mui-focused": {
-    color: "black",
-  },
-  "& .MuiOutlinedInput-root": {
-    "&.Mui-focused fieldset": {
-      borderColor: "black",
-    },
-  },
-});
+import { addTodoAPI } from "redux/reducers/todoSlice";
+import { store } from "redux/store";
+import { todo } from "ts/types/todo.types";
+import { StyledInputField } from "components/StyledMUIComponents/forms/StyledInputField";
 
 export default function TodoInput() {
   const [name, setName] = useState("");
-
-  const dispatch = useDispatch();
 
   function dispatchTodo() {
     const newTodo: todo = {
@@ -29,7 +16,7 @@ export default function TodoInput() {
       checked: false,
     };
     setName("");
-    dispatch(addTodo(newTodo));
+    store.dispatch(addTodoAPI(newTodo));
   }
 
   return (
@@ -44,6 +31,11 @@ export default function TodoInput() {
             value={name}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setName(event.target.value);
+            }}
+            onKeyDown={(ev) => {
+              if (ev.key === "Enter" && name.length > 0) {
+                dispatchTodo();
+              }
             }}
           />
         </Box>

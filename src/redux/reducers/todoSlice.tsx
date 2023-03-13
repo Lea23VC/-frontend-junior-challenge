@@ -2,24 +2,55 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API_URL } from "config/api";
 import { todoInitalState as initialState } from "constants/todoInitialState";
-
-export type todoState = {
-  todoList: todo[];
-  count: number;
-  status: string;
-  error: string;
-};
-
-export type todo = {
-  label: string;
-  checked?: boolean;
-};
+import { RootState } from "redux/store";
+import { todo, todoState, todoUpdateType } from "ts/types/todo.types";
 
 export const fetchTodos = createAsyncThunk("todos/fetchTodos", async () => {
   const response = await axios.get<todo[]>(API_URL);
-  console.log(response.data);
   return response?.data;
 });
+
+export const addTodoAPI = createAsyncThunk(
+  "todos/addTodos",
+  async (todo: todo, thunkAPI) => {
+    const response = await axios.post<todo>(API_URL, { ...todo });
+    const state: RootState = thunkAPI.getState() as RootState;
+    const newTodoList = addTodoUtil(response.data, state.todo.todoList);
+    return newTodoList;
+  }
+);
+
+export const deleteTodoAPI = createAsyncThunk(
+  "todos/updateTodo",
+  async (index: any, thunkAPI) => {
+    try {
+      await axios.delete<todo[]>(API_URL, { data: index });
+    } catch (e) {
+      //the api gives an 404 if I use delete request
+      //so I catch the error so i can return it as a successful request
+    } finally {
+      const state: RootState = thunkAPI.getState() as RootState;
+      const newTodoList = removeTodoUtil(index, state.todo.todoList);
+      return newTodoList;
+    }
+  }
+);
+
+export const updateTodoAPI = createAsyncThunk(
+  "todos/deleteTodo",
+  async (todoUpdate: todoUpdateType, thunkAPI) => {
+    try {
+      await axios.patch<todo[]>(API_URL, { data: { id: todoUpdate.index } });
+    } catch (e) {
+      //the api gives an 404 if I use delete request
+      //so I catch the error so i can return it as a successful request
+    } finally {
+      const state: RootState = thunkAPI.getState() as RootState;
+      const newTodoList = updateTodoUtil(todoUpdate, state.todo.todoList);
+      return newTodoList;
+    }
+  }
+);
 
 export const todoSlice = createSlice({
   name: "todo",
@@ -37,6 +68,9 @@ export const todoSlice = createSlice({
       const newArray = updateTodoUtil(action.payload, state.todoList);
       updateState(state, newArray);
     },
+    closeSnackbar: (state) => {
+      state.status = "";
+    },
   },
   extraReducers(builder) {
     builder
@@ -44,20 +78,52 @@ export const todoSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchTodos.fulfilled, (state, action) => {
+        updateState(state, action.payload);
         state.status = "succeeded";
-        state.todoList = action.payload;
+        state.loaded = true;
+        state.snackbarMessage = "TODOs loaded from API!";
       })
       .addCase(fetchTodos.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(deleteTodoAPI.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.snackbarMessage = "TODO deleted!";
+
+        updateState(state, action.payload);
+      })
+      .addCase(deleteTodoAPI.rejected, (state, action) => {
+        console.log("delete rejected");
+      })
+      .addCase(deleteTodoAPI.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(updateTodoAPI.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.snackbarMessage = "TODO updated!";
+        updateState(state, action.payload);
+      })
+      .addCase(updateTodoAPI.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(updateTodoAPI.rejected, (state, action) => {})
+      .addCase(addTodoAPI.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(addTodoAPI.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.snackbarMessage = "TODO added!";
+        updateState(state, action.payload);
+      })
+      .addCase(addTodoAPI.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });
   },
 });
-export const { addTodo, removeTodo, updateTodo } = todoSlice.actions;
-
-export const selectAllTodos = (state: todoState) => state.todoList;
-export const getTodosError = (state: todoState) => state.error;
-export const getTodosStatus = (state: todoState) => state.status;
+export const { addTodo, removeTodo, updateTodo, closeSnackbar } =
+  todoSlice.actions;
 
 export default todoSlice.reducer;
 

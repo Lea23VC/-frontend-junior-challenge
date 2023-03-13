@@ -1,4 +1,4 @@
-import { todoState } from "redux/reducers/todoSlice";
+import { todoState } from "ts/types/todo.types";
 
 //create inital state constant
 const todoInitalState: todoState = {
@@ -6,6 +6,7 @@ const todoInitalState: todoState = {
   count: 0,
   status: "idle",
   error: "",
+  loaded: false,
 };
 
 //update count value

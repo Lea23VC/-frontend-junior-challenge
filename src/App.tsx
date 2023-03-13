@@ -1,18 +1,21 @@
 import TodoList from "./components/TodoList";
 import TodoResults from "./components/TodoResults";
-import TodoInput from "./components/TodoInput";
+import TodoForm from "./components/TodoForm";
 import "./App.css";
 import { fetchTodos } from "redux/reducers/todoSlice";
 import { store } from "redux/store";
+import MainLayout from "components/layouts/mainLayout";
 
 const App = () => {
   store.dispatch(fetchTodos());
   return (
-    <div className="root">
-      <TodoList />
-      <TodoResults />
-      <TodoInput />
-    </div>
+    <MainLayout>
+      <div className="root">
+        <TodoList />
+        <TodoResults />
+        <TodoForm />
+      </div>
+    </MainLayout>
   );
 };
 
